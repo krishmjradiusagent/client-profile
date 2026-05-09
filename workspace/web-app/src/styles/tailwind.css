@@ -2,3 +2,26 @@
 @source '../**/*.{js,ts,jsx,tsx}';
 
 @import 'tw-animate-css';
+
+@theme {
+  --animate-shine: shine 5s linear infinite;
+  @keyframes shine {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+  }
+
+  --animate-rainbow: rainbow var(--speed, 3s) infinite linear;
+  @keyframes rainbow {
+    0% { background-position: 0%; }
+    100% { background-position: 200%; }
+  }
+}
+
+:root {
+  --color-1: oklch(66.2% 0.225 25.9);
+  --color-2: oklch(60.4% 0.26 302);
+  --color-3: oklch(69.6% 0.165 251);
+  --color-4: oklch(80.2% 0.134 225);
+  --color-5: oklch(90.7% 0.231 133);
+}

@@ -24,9 +24,7 @@ import {
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './ui/collapsible';
 import { Separator } from './ui/separator';
 import { FlipButton } from './ui/flip-button';
-import { AuroraBars } from './ui/aurora-bars';
-import Aurora from './ui/Aurora.tsx';
-import Orb from './ui/Orb.tsx';
+import { RainbowButton } from './ui/rainbow-button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
@@ -93,7 +91,6 @@ export function ThreePanelClientProfile() {
   const isDark = theme === 'dark';
   const [melSummaryExists, setMelSummaryExists] = useState(true);
   const [melGenerating, setMelGenerating] = useState(false);
-  const [melHovered, setMelHovered] = useState(false);
   const [expandedPast, setExpandedPast] = useState<number | null>(null);
   const [melOpen, setMelOpen] = useState(true);
 
@@ -345,29 +342,19 @@ export function ThreePanelClientProfile() {
 
               {/* CTA — always visible */}
               <div className="relative px-4 pb-3">
-                <button
+                <RainbowButton
                   onClick={handleGenerateMel}
                   disabled={melGenerating}
-                  onMouseEnter={() => setMelHovered(true)}
-                  onMouseLeave={() => setMelHovered(false)}
-                  className="relative w-full overflow-hidden rounded-md text-white disabled:opacity-50 h-9 flex items-center justify-between px-3 bg-[#0d0b1e] border border-violet-500/35 transition-all"
+                  className="w-full justify-between"
                 >
-                  <div className="absolute inset-0 pointer-events-none">
-                    <Aurora
-                      colorStops={["#a78bfa", "#B497CF", "#5227FF"]}
-                      blend={1}
-                      amplitude={0.4}
-                      speed={melHovered ? 2.5 : 1.2}
-                    />
-                  </div>
-                  <span className="relative flex items-center gap-2 text-sm font-semibold">
-                    <InfIcon className="h-4 w-4 text-violet-300" />
-                    {melGenerating ? 'Generating…' : 'Summarise Violet'}
+                  <span className="flex items-center gap-2 text-sm font-semibold text-violet-700">
+                    <InfIcon className="h-4 w-4 text-violet-500" />
+                    {melGenerating ? 'Generating…' : 'Summarise, Violet'}
                   </span>
-                  <span className="relative flex items-center gap-0.5 rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[10px] font-semibold text-white/70">
+                  <span className="flex items-center gap-0.5 rounded-full bg-violet-50 border border-violet-200 px-2 py-0.5 text-[10px] font-semibold text-violet-600">
                     <span>⌘</span><span>S</span>
                   </span>
-                </button>
+                </RainbowButton>
               </div>
 
               {/* Collapsible body */}
