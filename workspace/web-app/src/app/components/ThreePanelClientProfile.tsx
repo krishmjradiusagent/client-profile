@@ -297,10 +297,17 @@ export function ThreePanelClientProfile() {
           </div>
           {/* Mobile clients + Client App — banner rows */}
           <div className="mt-2 border-y border-border -mx-4">
-            <div className="relative flex items-center gap-2 px-4 py-2.5 overflow-hidden bg-blue-50 dark:bg-blue-950/40 before:absolute before:inset-0 before:bg-[linear-gradient(105deg,transparent_40%,rgba(255,255,255,0.5)_50%,transparent_60%)] before:animate-[shine_3s_ease-in-out_infinite] dark:before:bg-[linear-gradient(105deg,transparent_40%,rgba(255,255,255,0.06)_50%,transparent_60%)]">
+            <div className="relative flex items-center gap-2 px-4 py-2.5 overflow-hidden bg-blue-50 dark:bg-blue-950/40">
               <Droplet className="h-3.5 w-3.5 text-blue-500 shrink-0" />
               <span className="text-xs text-blue-700 dark:text-blue-300 flex-1 truncate">My mobile clients</span>
               <Button size="sm" className="h-6 text-[10px] px-2 font-medium bg-blue-500 hover:bg-blue-600 active:scale-95 text-white transition-all duration-150 border-0">Claim Lead</Button>
+              <motion.span
+                className="pointer-events-none absolute inset-y-0 left-0 z-10 w-1/2"
+                style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)" }}
+                initial={{ x: "-100%" }}
+                animate={{ x: "300%" }}
+                transition={{ repeat: Infinity, repeatDelay: 1.2, duration: 1.4, ease: "easeInOut" }}
+              />
             </div>
             <Separator />
             <div className="flex items-center gap-2 px-4 py-2.5">
