@@ -292,18 +292,18 @@ function TransactionCard({
     <Card className="p-3 rounded-xl hover:shadow-md hover:border-border/80 transition-shadow cursor-pointer" style={{ gap: 0 }}>
       {/* Header row */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Badge variant="outline" className="text-xs h-6 px-2 rounded-full font-medium border-purple-200 bg-purple-50 text-purple-700 shrink-0">
+        <div className="flex items-center gap-1 min-w-0">
+          <Badge variant="outline" className="text-[10px] h-5 px-2 rounded-full font-medium border-slate-200 bg-slate-50 text-slate-600 shrink-0">
             {tx.listingType}
           </Badge>
-          <Badge variant="outline" className="text-xs h-6 px-2 rounded-full font-normal border-border text-muted-foreground shrink-0">
+          <Badge variant="outline" className="text-[10px] h-5 px-2 rounded-full font-normal border-border text-muted-foreground shrink-0">
             {tx.transactionType}
           </Badge>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" aria-label="Open transaction actions">
-              <MoreVertical className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Open transaction actions">
+              <MoreVertical className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-36">
@@ -322,53 +322,51 @@ function TransactionCard({
       {/* Price + specs */}
       <div className="mt-1 flex items-center gap-1.5">
         {tx.price && <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{tx.price}</span>}
-        <span className="text-xs text-muted-foreground truncate">{tx.beds} bd · {tx.baths} ba · {tx.sqft}</span>
+        <span className="text-xs leading-4 text-muted-foreground truncate">{tx.beds} bd · {tx.baths} ba · {tx.sqft}</span>
       </div>
 
-      <Separator className="my-1.5" />
+      <Separator className="my-2" />
 
-      {/* Metadata grid — inline label:value per cell */}
+      {/* Metadata grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[9px] uppercase tracking-wide text-muted-foreground shrink-0">Client</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Client</span>
           <Avatar className="h-3.5 w-3.5 shrink-0">
             <AvatarFallback className="text-[7px] font-bold bg-violet-100 text-violet-700">{tx.clientInitials}</AvatarFallback>
           </Avatar>
-          <span className="text-[11px] leading-none text-foreground truncate">{tx.clientName}</span>
+          <span className="text-xs leading-4 text-foreground truncate">{tx.clientName}</span>
         </div>
         <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[9px] uppercase tracking-wide text-muted-foreground shrink-0">Acc.</span>
-          <span className="text-[11px] leading-none text-foreground truncate">{tx.acceptanceDate ?? '—'}</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Accepted</span>
+          <span className="text-xs leading-4 text-foreground truncate">{tx.acceptanceDate ?? '—'}</span>
         </div>
         <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[9px] uppercase tracking-wide text-muted-foreground shrink-0">Escrow</span>
-          <span className="text-[11px] leading-none text-foreground truncate">{tx.closeOfEscrow ?? '—'}</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Escrow</span>
+          <span className="text-xs leading-4 text-foreground truncate">{tx.closeOfEscrow ?? '—'}</span>
         </div>
         <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[9px] uppercase tracking-wide text-muted-foreground shrink-0">Agent</span>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Agent</span>
           <Avatar className="h-3.5 w-3.5 shrink-0">
             <AvatarFallback className="text-[7px] font-bold bg-sky-100 text-sky-700">{tx.agentInitials}</AvatarFallback>
           </Avatar>
-          <span className="text-[11px] leading-none text-foreground truncate">{tx.agentName}</span>
+          <span className="text-xs leading-4 text-foreground truncate">{tx.agentName}</span>
         </div>
         {tx.collaboratorName && (
           <div className="col-span-2 flex items-center gap-1 min-w-0">
-            <Users className="h-3 w-3 text-muted-foreground shrink-0" />
-            <span className="text-[11px] leading-none text-foreground truncate">{tx.collaboratorName}</span>
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Collab</span>
+            <span className="text-xs leading-4 text-foreground truncate">{tx.collaboratorName}</span>
             {tx.collaboratorCount > 0 && (
-              <Badge variant="outline" className="text-[9px] h-4 px-1 rounded-full shrink-0 font-normal">
-                +{tx.collaboratorCount}
-              </Badge>
+              <span className="text-[10px] text-muted-foreground shrink-0">+{tx.collaboratorCount}</span>
             )}
           </div>
         )}
       </div>
 
-      <Separator className="my-1.5" />
+      <Separator className="my-2" />
 
       {/* Status row */}
       <div className="flex items-center gap-2">
-        <span className="text-[10px] uppercase text-muted-foreground">Status</span>
+        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Status</span>
         <TxStatusDropdown status={tx.status} onChange={(s) => onStatusChange(tx.id, s)} />
       </div>
     </Card>
@@ -393,8 +391,8 @@ function SearchCard({
           <SearchStatusDropdown status={search.status} onChange={(s) => onStatusChange(search.id, s)} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" aria-label="Open search actions">
-                <MoreVertical className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Open search actions">
+                <MoreVertical className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
@@ -412,8 +410,8 @@ function SearchCard({
       <Separator className="my-2" />
 
       {/* Metadata */}
-      <p className="text-xs text-muted-foreground line-clamp-1">{search.location}</p>
-      <p className="text-xs text-muted-foreground mt-0.5">{search.beds} beds · {search.baths} baths · {search.sqft} sqft</p>
+      <p className="text-xs leading-4 text-muted-foreground line-clamp-1">{search.location}</p>
+      <p className="text-xs leading-4 text-muted-foreground mt-0.5">{search.beds} bd · {search.baths} ba · {search.sqft}</p>
       <p className="text-[10px] text-muted-foreground/70 mt-0.5">{search.offersCount} offers · Updated {search.lastUpdated}</p>
     </Card>
   );
@@ -433,7 +431,7 @@ function FinancingCard() {
       <p className="text-xs text-muted-foreground mb-2 leading-4">
         Help this client get pre-approved before writing an offer.
       </p>
-      <Button size="sm" className="h-8 text-xs w-full" onClick={() => toast.success('Pre-approval flow opened.')}>
+      <Button size="sm" className="h-8 text-xs w-full bg-emerald-600 hover:bg-emerald-700 text-white border-0" onClick={() => toast.success('Pre-approval flow opened.')}>
         Pre-approve client
       </Button>
     </Card>
