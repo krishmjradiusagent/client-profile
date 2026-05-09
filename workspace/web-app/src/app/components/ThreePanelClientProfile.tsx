@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useTheme } from 'next-themes';
-import { ChevronRight, ChevronDown, ChevronLeft, Plus, MessageSquare, Bell, Activity as ActivityIcon, StickyNote, Building2, Briefcase, Mail, Phone, MapPin, Archive, FileTextIcon, Sparkles, Sun, Moon, PhoneCall, MessageCircle, Smartphone, RefreshCw, Clock, Ban, X, Pencil, Trash2, MoreVertical, Send } from 'lucide-react';
+import { ChevronRight, ChevronDown, ChevronLeft, Plus, MessageSquare, Bell, Activity as ActivityIcon, StickyNote, Building2, Briefcase, Mail, Phone, MapPin, Archive, FileTextIcon, Sparkles, Sun, Moon, PhoneCall, MessageCircle, Smartphone, RefreshCw, Clock, Ban, X, Pencil, Trash2, MoreVertical, Send, CheckCircle2, XCircle, GripVertical, Users } from 'lucide-react';
 import { DSButton, DSBadge } from './ds';
 import { cn } from './ui/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -27,6 +27,11 @@ import { FlipButton } from './ui/flip-button';
 import { AuroraBars } from './ui/aurora-bars';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Button } from './ui/button';
 import { AddFamilyMemberDialog } from './client-profile/AddFamilyMemberDialog';
 import { AddCollaboratorDialog } from './client-profile/AddCollaboratorDialog';
 import { BRBCCard } from './client-profile/BRBCCard';
@@ -127,6 +132,24 @@ export function ThreePanelClientProfile() {
     ],
   });
 
+  // Custom Fields
+  const [customFieldTab, setCustomFieldTab] = useState<'my' | 'team'>('my');
+  const [customFields, setCustomFields] = useState([
+    { id: 'cf1', name: 'Lead Temperature', type: 'Text', visibility: 'me', value: 'Warm' },
+    { id: 'cf2', name: 'Follow-up Date', type: 'Date', visibility: 'team', value: '2025-02-01' },
+  ]);
+  const [showAddCustomField, setShowAddCustomField] = useState(false);
+  const [cfDraft, setCfDraft] = useState({ name: '', type: 'Text', visibility: 'me' });
+  // BRBC entries (supports multiple)
+  const [brbcEntries] = useState([{
+    status: 'agent_signature_pending' as const,
+    createdDate: 'May 1, 2026',
+    recipients: [
+      { name: 'You (Agent)', role: 'Agent' as const, email: 'agent@radius.com', initials: 'AG', signingStatus: 'pending' as const },
+      { name: 'Violet Cole', role: 'Buyer' as const, email: 'violet.cole@email.com', initials: 'VC', signingStatus: 'signed' as const },
+    ],
+  }]);
+
   const pastSummaries = [
     { date: 'Oct 12, 2025', preview: 'Client app activity reviewed. No new transaction movement.', full: 'Violet\'s client app showed last activity on Oct 12, 2025. No new transaction movement detected. Relationship and contact details remain unchanged.' },
     { date: 'Jun 3, 2024',  preview: 'Client added from Radius Marketplace and assigned to Monica Miller.', full: 'Violet Cole was added via Radius Marketplace on Jun 3, 2024. Assigned to Monica Miller as primary agent. Initial client type set to New Client.' },
@@ -166,10 +189,19 @@ export function ThreePanelClientProfile() {
             </button>
 
           {/* Profile Card */}
-          <div className={`rounded-xl border overflow-hidden mb-3 ${isDark ? 'bg-[#262626] border-[#3d3d3d]' : 'bg-white border-slate-200'}`}>
+          <div className={`group relative rounded-xl border overflow-hidden mb-3 ${isDark ? 'bg-[#262626] border-[#3d3d3d]' : 'bg-white border-slate-200'}`}>
+            {/* Hover actions */}
+            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              <button className={`flex items-center justify-center h-6 w-6 rounded-md transition-colors ${isDark ? 'bg-[#3d3d3d] hover:bg-[#4d4d4d] text-gray-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}>
+                <Pencil className="h-3 w-3" />
+              </button>
+              <button className={`flex items-center justify-center h-6 w-6 rounded-md transition-colors ${isDark ? 'bg-red-900/40 hover:bg-red-900/70 text-red-400' : 'bg-red-50 hover:bg-red-100 text-red-500'}`}>
+                <Archive className="h-3 w-3" />
+              </button>
+            </div>
             <div className="flex items-center gap-3 p-3">
               <Avatar className={`h-11 w-11 shrink-0 ring-2 ${isDark ? 'ring-[#3d3d3d]' : 'ring-slate-200'}`}>
-                <AvatarImage src={imgAvatar} alt="Violet Cole" className="object-cover object-top" />
+                <AvatarImage src={imgAvatar} alt="Violet Cole" className="object-cover object-center" />
                 <AvatarFallback className={`text-sm ${isDark ? 'bg-[#3d3d3d] text-white' : 'bg-slate-100 text-slate-700'}`}>VC</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
@@ -178,11 +210,20 @@ export function ThreePanelClientProfile() {
               </div>
             </div>
             <div className={`h-px ${isDark ? 'bg-[#3d3d3d]' : 'bg-slate-200'}`} />
-            <div className="flex gap-3 flex-wrap px-3 py-2">
-              <span className={`text-[11px] font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Buyer</span>
-              <span className={`text-[11px] font-medium ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>Seller</span>
-              <span className={`text-[11px] font-medium ${isDark ? 'text-teal-400' : 'text-teal-600'}`}>Landlord</span>
-              <span className={`text-[11px] font-medium ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>Tenant</span>
+            <div className="flex items-center px-3 py-2 gap-0">
+              {[
+                { label: 'Buyer',    cls: isDark ? 'text-emerald-400' : 'text-emerald-600' },
+                { label: 'Seller',   cls: isDark ? 'text-blue-400'    : 'text-blue-600'    },
+                { label: 'Landlord', cls: isDark ? 'text-teal-400'    : 'text-teal-600'    },
+                { label: 'Tenant',   cls: isDark ? 'text-purple-400'  : 'text-purple-600'  },
+              ].map(({ label, cls }, i, arr) => (
+                <React.Fragment key={label}>
+                  <span className={`text-[11px] font-medium ${cls}`}>{label}</span>
+                  {i < arr.length - 1 && (
+                    <span className={`inline-block w-px h-3 mx-2 self-center rounded-full ${isDark ? 'bg-[#3d3d3d]' : 'bg-slate-300'}`} />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
             <div className={`h-px ${isDark ? 'bg-[#3d3d3d]' : 'bg-slate-200'}`} />
             <div className="grid grid-cols-3">
@@ -222,6 +263,31 @@ export function ThreePanelClientProfile() {
                 <SelectItem value="monica">Monica Miller</SelectItem>
               </SelectContent>
             </Select>
+            {/* Pods row */}
+            <div className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 ${isDark ? 'border-[#3d3d3d] bg-[#1e1e1e]' : 'border-gray-200 bg-gray-50'}`}>
+              <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <span className="text-xs text-muted-foreground flex-1 truncate">My mobile clients</span>
+              <Badge variant="secondary" className="text-[10px] h-5 px-2 rounded-full cursor-pointer font-medium hover:bg-primary/10">Claim Lead</Badge>
+            </div>
+          </div>
+          {/* Client App inline */}
+          <div className={`mt-2 flex items-center gap-2 rounded-lg border px-3 py-2 ${isDark ? 'border-[#3d3d3d] bg-[#1e1e1e]' : 'border-gray-200 bg-gray-50'}`}>
+            <Smartphone className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span className="text-xs font-medium text-muted-foreground flex-1">Client App</span>
+            <div className="flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-[10px] text-muted-foreground">Last active Oct 12</span>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Badge variant="outline" className={`text-[10px] h-5 px-1.5 ml-1 cursor-pointer ${isDark ? 'border-[#3d3d3d] text-gray-400 hover:text-white' : 'border-gray-200 text-gray-500 hover:text-gray-900'}`}>Invite</Badge>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem>Invite via email</DropdownMenuItem>
+                <DropdownMenuItem>Invite via text</DropdownMenuItem>
+                <DropdownMenuItem>Copy invite</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </SidebarHeader>
 
@@ -353,9 +419,14 @@ export function ThreePanelClientProfile() {
                 Co-agent
               </AccordionTrigger>
               <AccordionContent className="border-b border-border pb-0">
-                <div className="px-4 py-2.5">
-                  <p className="text-xs font-medium text-foreground leading-tight">Sarah Johnson</p>
-                  <p className="text-[11px] mt-0.5 text-muted-foreground">sarah.johnson@realty.com</p>
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  <Avatar className="h-7 w-7 shrink-0">
+                    <AvatarFallback className="text-[10px] font-semibold bg-gradient-to-br from-sky-400 to-blue-500 text-white">SJ</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground leading-tight">Sarah Johnson</p>
+                    <p className="text-[11px] mt-0.5 text-muted-foreground truncate">sarah.johnson@realty.com</p>
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -367,117 +438,197 @@ export function ThreePanelClientProfile() {
               <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
                 <span className="flex items-center gap-2">
                   Contact
-                  <DSBadge variant="secondary" className="h-4 px-1.5 rounded-full text-[10px]">{contactEmails.length + contactPhones.length + 1}</DSBadge>
+                  <Badge variant="secondary" className="h-4 px-1.5 rounded-full text-[10px] font-medium">{contactEmails.length + contactPhones.length + 1}</Badge>
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
-                {/* Emails */}
-                {contactEmails.map((email, i) => (
-                  <div key={email.id}>
-                    <div className="group flex items-center gap-3 min-h-10 px-4 py-1.5">
-                      <Mail className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                      <p className="text-xs leading-tight text-foreground flex-1 truncate">{email.value}</p>
-                      <DSBadge variant="outline" className="text-[10px] h-4 px-1 border-border text-muted-foreground shrink-0">{email.label}</DSBadge>
-                      <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 ml-1">
+                {[
+                  ...contactEmails.map((e, i) => ({ type: 'email' as const, id: e.id, value: e.value, label: e.label, rowIdx: i })),
+                  ...contactPhones.map((p, i) => ({ type: 'phone' as const, id: p.id, value: p.value, label: p.label, rowIdx: contactEmails.length + i })),
+                  { type: 'address' as const, id: 'addr', value: '123 Mission Street, Palo Alto, CA 54323', label: '', rowIdx: contactEmails.length + contactPhones.length },
+                ].map((item, listIdx, arr) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: item.rowIdx * 0.055, duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    <div className="group flex items-center gap-2.5 min-h-10 px-4 py-1.5">
+                      {/* Colored icon pill */}
+                      <span className={cn(
+                        'flex items-center justify-center h-6 w-6 rounded-full shrink-0',
+                        item.type === 'email'   && (isDark ? 'bg-blue-500/15'    : 'bg-blue-50'),
+                        item.type === 'phone'   && (isDark ? 'bg-emerald-500/15' : 'bg-emerald-50'),
+                        item.type === 'address' && (isDark ? 'bg-rose-500/15'    : 'bg-rose-50'),
+                      )}>
+                        {item.type === 'email'   && <Mail    className="h-3 w-3 text-blue-500" />}
+                        {item.type === 'phone'   && <Phone   className="h-3 w-3 text-emerald-500" />}
+                        {item.type === 'address' && <MapPin  className="h-3 w-3 text-rose-500" />}
+                      </span>
+                      <p className="text-xs leading-tight text-foreground flex-1 truncate">{item.value}</p>
+                      {item.label && (
+                        <Badge variant="outline" className={cn(
+                          'text-[10px] h-4 px-2 rounded-full shrink-0 font-normal border',
+                          isDark ? 'border-[#3d3d3d] text-gray-400' : 'border-gray-200 text-gray-500'
+                        )}>
+                          {item.label}
+                        </Badge>
+                      )}
+                      <div className="hidden sm:flex opacity-0 group-hover:opacity-100 transition-opacity gap-0.5">
                         <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Pencil className="h-3 w-3 text-muted-foreground" /></button>
-                        <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Trash2 className="h-3 w-3 text-muted-foreground" /></button>
+                        {item.type !== 'address' && <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Trash2 className="h-3 w-3 text-muted-foreground" /></button>}
                       </div>
                       <div className="sm:hidden">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild><button className="p-1 rounded"><MoreVertical className="h-3.5 w-3.5 text-muted-foreground" /></button></DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-28">
                             <DropdownMenuItem><Pencil className="h-3.5 w-3.5 mr-2" />Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive focus:text-destructive"><Trash2 className="h-3.5 w-3.5 mr-2" />Delete</DropdownMenuItem>
+                            {item.type !== 'address' && <DropdownMenuItem className="text-destructive focus:text-destructive"><Trash2 className="h-3.5 w-3.5 mr-2" />Delete</DropdownMenuItem>}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
                     </div>
-                    {i < contactEmails.length - 1 && <div className="h-px border-b border-border mx-4" />}
-                  </div>
+                    {listIdx < arr.length - 1 && <div className={`h-px mx-4 ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`} />}
+                  </motion.div>
                 ))}
-                <div className="h-px border-b border-border" />
-                {/* Phones */}
-                {contactPhones.map((phone, i) => (
-                  <div key={phone.id}>
-                    <div className="group flex items-center gap-3 min-h-10 px-4 py-1.5">
-                      <Phone className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                      <p className="text-xs leading-tight text-foreground flex-1 truncate">{phone.value}</p>
-                      <DSBadge variant="outline" className="text-[10px] h-4 px-1 border-border text-muted-foreground shrink-0">{phone.label}</DSBadge>
-                      <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 ml-1">
-                        <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Pencil className="h-3 w-3 text-muted-foreground" /></button>
-                        <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Trash2 className="h-3 w-3 text-muted-foreground" /></button>
-                      </div>
-                      <div className="sm:hidden">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild><button className="p-1 rounded"><MoreVertical className="h-3.5 w-3.5 text-muted-foreground" /></button></DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-28">
-                            <DropdownMenuItem><Pencil className="h-3.5 w-3.5 mr-2" />Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive focus:text-destructive"><Trash2 className="h-3.5 w-3.5 mr-2" />Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    {i < contactPhones.length - 1 && <div className="h-px border-b border-border mx-4" />}
-                  </div>
-                ))}
-                <div className="h-px border-b border-border" />
-                {/* Address */}
-                <div className="group flex items-start gap-3 min-h-10 px-4 py-2">
-                  <MapPin className="h-4 w-4 flex-shrink-0 text-muted-foreground mt-0.5" />
-                  <p className="text-xs leading-tight text-foreground flex-1">123 Mission Street, Palo Alto, CA 54323</p>
-                  <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 mt-0.5">
-                    <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Pencil className="h-3 w-3 text-muted-foreground" /></button>
-                  </div>
-                </div>
-                {/* Add link */}
-                <div className="px-4 py-2 border-b border-border">
-                  <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: (contactEmails.length + contactPhones.length + 1) * 0.055 + 0.1, duration: 0.2 }}
+                  className={`px-4 py-2.5 border-t ${isDark ? 'border-[#2a2a2a]' : 'border-gray-100'}`}
+                >
+                  <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                     <Plus className="h-3 w-3" /> Add contact detail
                   </button>
-                </div>
+                </motion.div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
 
-          {/* Added on / Source */}
-          <SidebarMetadataRow label="Added on" value="JUN 3 2024" variant="accent" />
-          <SidebarMetadataRow label="Source" value="Radius Marketplace" variant="default" />
-
-          {/* Archived */}
-          <SidebarRow icon={Archive} label="Archived" />
-
           {/* AI Prospecting */}
-          <div className="flex items-center gap-3 min-h-12 px-4 py-0 border-b border-border">
+          <div className="group flex items-center gap-3 min-h-12 px-4 py-0 border-b border-border">
             <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
             <span className="flex-1 text-sm font-medium text-muted-foreground leading-none">AI Prospecting</span>
+            <button className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 text-[11px] text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded hover:bg-muted mr-1">
+              <Pencil className="h-3 w-3 mr-0.5" />Edit
+            </button>
             <Switch defaultChecked className="scale-75 origin-right" />
           </div>
 
-          {/* Buyer/Tenant Representation */}
-          <SidebarRow icon={Briefcase} label="Buyer/Tenant Representation" />
+          {/* AI Chat Replies */}
+          <div className="flex items-center gap-3 min-h-12 px-4 py-0 border-b border-border">
+            <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="flex-1 text-sm font-medium text-muted-foreground leading-none">AI chat replies</span>
+            <Switch className="scale-75 origin-right" />
+          </div>
 
-          {/* Relationships */}
-          <Accordion type="single" collapsible defaultValue="relationships">
-            <AccordionItem value="relationships" className="border-none">
+          {/* Buyer/Tenant Representation */}
+          <Accordion type="single" collapsible>
+            <AccordionItem value="brbc" className="border-none">
               <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
-                <span className="flex items-center gap-2">
-                  Relationships
-                  <DSBadge variant="secondary" className="h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px]">1</DSBadge>
+                <span className="flex items-center gap-2 flex-1">
+                  <Briefcase className="h-4 w-4 shrink-0" />
+                  Buyer/Tenant Representation
                 </span>
               </AccordionTrigger>
               <AccordionContent className="border-b border-border pb-0">
-                <div className="flex items-center gap-3 min-h-12 px-4 py-0">
-                  <Avatar className="h-7 w-7 shrink-0">
-                    <AvatarFallback className="text-[10px] bg-pink-500 text-white">SZ</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-xs font-medium text-foreground">Smith Zeglaya</p>
-                      <DSBadge variant="outline" className="text-[10px] h-4 px-1 border-border text-muted-foreground">Spouse</DSBadge>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">818-888-1234</p>
+                {brbcEntries.length === 0 ? (
+                  <div className="px-4 py-4 space-y-2.5">
+                    <p className="text-xs text-muted-foreground">No buyer representation added yet</p>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline" className="w-full text-xs h-8">
+                          <Plus className="h-3 w-3 mr-1" />Add Buyer Representation
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-44">
+                        <DropdownMenuItem>Create New</DropdownMenuItem>
+                        <DropdownMenuItem>Upload Existing Form</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                </div>
+                ) : (
+                  <div className="px-4 py-3 space-y-3">
+                    {brbcEntries.map((entry, idx) => (
+                      <div key={idx} className={cn('space-y-2', idx > 0 && 'pt-3 border-t border-border')}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <FileTextIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <span className="text-xs font-medium text-foreground">BRBC</span>
+                          </div>
+                          <Badge variant="outline" className={cn(
+                            'text-[10px] h-5 px-1.5 shrink-0 rounded-full',
+                            entry.status === 'agent_signature_pending' || entry.status === 'buyer_signature_pending'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : entry.status === 'completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-red-50 text-red-600 border-red-200'
+                          )}>
+                            {entry.status === 'agent_signature_pending' ? 'Your sig. pending'
+                              : entry.status === 'buyer_signature_pending' ? 'Buyer sig. pending'
+                              : entry.status === 'completed' ? 'Completed'
+                              : entry.status === 'draft_ready' ? 'Draft ready'
+                              : entry.status === 'expired' ? 'Expired'
+                              : entry.status === 'declined' ? 'Declined'
+                              : 'Not started'}
+                          </Badge>
+                        </div>
+                        {(entry.status === 'agent_signature_pending' || entry.status === 'buyer_signature_pending') && (
+                          <div className="flex items-start gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-2">
+                            <Clock className="h-3 w-3 text-amber-600 shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-amber-700 leading-tight">
+                              {entry.status === 'agent_signature_pending' ? 'Your signature is pending.' : 'Waiting for buyer signature.'}
+                            </p>
+                          </div>
+                        )}
+                        {entry.recipients.length > 0 && (
+                          <div className={`rounded-lg border overflow-hidden ${isDark ? 'border-[#2d2d2d]' : 'border-gray-200'}`}>
+                            {entry.recipients.map((r, i) => {
+                              const signed = r.signingStatus === 'signed';
+                              const dec = r.signingStatus === 'declined';
+                              return (
+                                <div key={i} className={cn('flex items-center gap-2 px-2.5 py-1.5', i > 0 && (isDark ? 'border-t border-[#2d2d2d]' : 'border-t border-gray-100'))}>
+                                  <Avatar className="h-6 w-6 shrink-0">
+                                    <AvatarFallback className={`text-[9px] font-semibold ${isDark ? 'bg-[#3d3d3d] text-white' : 'bg-slate-200 text-slate-700'}`}>{r.initials}</AvatarFallback>
+                                  </Avatar>
+                                  <span className="flex-1 text-[11px] font-medium truncate text-foreground">{r.name}</span>
+                                  {signed && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
+                                  {dec && <XCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />}
+                                  {!signed && !dec && <Clock className="h-3.5 w-3.5 text-amber-500 shrink-0" />}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        <div className="flex gap-1.5">
+                          {entry.status === 'agent_signature_pending' && (
+                            <Button size="sm" className="flex-1 text-xs h-7">Review &amp; Sign</Button>
+                          )}
+                          {entry.status === 'not_started' && (
+                            <Button size="sm" className="flex-1 text-xs h-7"><Plus className="h-3 w-3 mr-1" />Create BRBC</Button>
+                          )}
+                          {entry.status === 'draft_ready' && (
+                            <Button size="sm" className="flex-1 text-xs h-7"><Send className="h-3 w-3 mr-1" />Send for Sig.</Button>
+                          )}
+                          {(entry.status === 'expired' || entry.status === 'declined') && (
+                            <Button size="sm" className="flex-1 text-xs h-7"><Plus className="h-3 w-3 mr-1" />New BRBC</Button>
+                          )}
+                          <Button size="sm" variant="outline" className="text-xs h-7">View</Button>
+                        </div>
+                      </div>
+                    ))}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors pt-1">
+                          <Plus className="h-3 w-3" />Add another
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-44">
+                        <DropdownMenuItem>Create New</DropdownMenuItem>
+                        <DropdownMenuItem>Upload Existing Form</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                )}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -488,7 +639,7 @@ export function ThreePanelClientProfile() {
               <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
                 <span className="flex items-center gap-2 flex-1">
                   Family Members
-                  {familyMembers.length > 0 && <DSBadge variant="secondary" className="h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px]">{familyMembers.length}</DSBadge>}
+                  {familyMembers.length > 0 && <Badge variant="secondary" className="h-4 px-1.5 rounded-full text-[10px] font-medium">{familyMembers.length}</Badge>}
                   <span className="ml-auto flex items-center gap-1 mr-1">
                     <span role="button" tabIndex={0} onClick={e => { e.stopPropagation(); }} onKeyDown={e => e.key==='Enter'&&e.stopPropagation()} className={`p-1 rounded cursor-pointer ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`} title="Send app invite"><Send className="h-3.5 w-3.5 text-muted-foreground" /></span>
                     <span role="button" tabIndex={0} onClick={e => { e.stopPropagation(); setShowAddFamily(true); }} onKeyDown={e => e.key==='Enter'&&(e.stopPropagation(),setShowAddFamily(true))} className={`p-1 rounded cursor-pointer ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Plus className="h-3.5 w-3.5 text-muted-foreground" /></span>
@@ -500,18 +651,33 @@ export function ThreePanelClientProfile() {
                   <p className="text-xs px-4 py-2.5 text-muted-foreground">No family members added.</p>
                 ) : familyMembers.map((m, i) => (
                   <div key={m.id}>
-                    <div className="group flex items-center gap-3 min-h-12 px-4 py-1.5">
-                      <Avatar className="h-7 w-7 shrink-0">
+                    <div className="group flex items-start gap-3 px-4 py-2.5">
+                      <Avatar className="h-7 w-7 shrink-0 mt-0.5">
                         <AvatarFallback className={`text-[10px] font-semibold bg-gradient-to-br ${m.color} text-white`}>{m.initials}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 mb-1">
                           <p className="text-xs font-medium text-foreground">{m.name}</p>
-                          <DSBadge variant="outline" className="text-[10px] h-4 px-1 border-border text-muted-foreground">{m.relationship}</DSBadge>
+                          <Badge variant="outline" className={cn('text-[10px] h-4 px-2 rounded-full font-normal', isDark ? 'border-[#3d3d3d] text-gray-400' : 'border-gray-200 text-gray-500')}>{m.relationship}</Badge>
                         </div>
-                        <p className="text-[11px] text-muted-foreground">{m.phone || m.email}</p>
+                        {m.email && (
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className={cn('flex items-center justify-center h-4 w-4 rounded-full shrink-0', isDark ? 'bg-blue-500/15' : 'bg-blue-50')}>
+                              <Mail className="h-2.5 w-2.5 text-blue-500" />
+                            </span>
+                            <a href={`mailto:${m.email}`} className="text-[11px] text-blue-600 underline underline-offset-2 truncate hover:text-blue-700">{m.email}</a>
+                          </div>
+                        )}
+                        {m.phone && (
+                          <div className="flex items-center gap-1.5">
+                            <span className={cn('flex items-center justify-center h-4 w-4 rounded-full shrink-0', isDark ? 'bg-emerald-500/15' : 'bg-emerald-50')}>
+                              <Phone className="h-2.5 w-2.5 text-emerald-500" />
+                            </span>
+                            <a href={`tel:${m.phone}`} className="text-[11px] text-emerald-600 underline underline-offset-2 truncate hover:text-emerald-700">{m.phone}</a>
+                          </div>
+                        )}
                       </div>
-                      <div className="hidden sm:flex opacity-0 group-hover:opacity-100 transition-opacity gap-0.5">
+                      <div className="hidden sm:flex opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 mt-0.5">
                         <button className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Pencil className="h-3 w-3 text-muted-foreground" /></button>
                         <button onClick={() => setDeleteFamilyTarget({ id: m.id, name: m.name })} className={`p-1 rounded ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Trash2 className="h-3 w-3 text-muted-foreground" /></button>
                       </div>
@@ -525,7 +691,7 @@ export function ThreePanelClientProfile() {
                         </DropdownMenu>
                       </div>
                     </div>
-                    {i < familyMembers.length - 1 && <div className="h-px border-b border-border mx-4" />}
+                    {i < familyMembers.length - 1 && <div className={`h-px mx-4 ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`} />}
                   </div>
                 ))}
               </AccordionContent>
@@ -538,7 +704,7 @@ export function ThreePanelClientProfile() {
               <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
                 <span className="flex items-center gap-2 flex-1">
                   Collaborators
-                  {collaborators.length > 0 && <DSBadge variant="secondary" className="h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px]">{collaborators.length}</DSBadge>}
+                  {collaborators.length > 0 && <Badge variant="secondary" className="h-4 px-1.5 rounded-full text-[10px] font-medium">{collaborators.length}</Badge>}
                   <span role="button" tabIndex={0} onClick={e => { e.stopPropagation(); setShowAddCollaborator(true); }} onKeyDown={e => e.key==='Enter'&&(e.stopPropagation(),setShowAddCollaborator(true))} className={`ml-auto mr-1 p-1 rounded cursor-pointer ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Plus className="h-3.5 w-3.5 text-muted-foreground" /></span>
                 </span>
               </AccordionTrigger>
@@ -554,8 +720,8 @@ export function ThreePanelClientProfile() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <p className="text-xs font-medium text-foreground">{c.name}</p>
-                          <DSBadge variant="outline" className="text-[10px] h-4 px-1 border-border text-muted-foreground">{c.role}</DSBadge>
-                          {c.isInvited && <DSBadge variant="outline" className="text-[10px] h-4 px-1 bg-amber-50 text-amber-700 border-amber-200">Invited</DSBadge>}
+                          <Badge variant="outline" className={cn('text-[10px] h-4 px-2 rounded-full font-normal', isDark ? 'border-[#3d3d3d] text-gray-400' : 'border-gray-200 text-gray-500')}>{c.role}</Badge>
+                          {c.isInvited && <Badge variant="outline" className="text-[10px] h-4 px-2 rounded-full bg-amber-50 text-amber-700 border-amber-200">Invited</Badge>}
                         </div>
                         <p className="text-[11px] text-muted-foreground">{c.access}</p>
                       </div>
@@ -580,69 +746,131 @@ export function ThreePanelClientProfile() {
             </AccordionItem>
           </Accordion>
 
-          {/* Details / Background / Custom fields / Additional Details */}
-          <Accordion type="multiple" className="w-full">
-            {[
-              { value: 'details', label: 'Details', rows: [['Agent','Blaize Zeglaya'],['Timeline','0-3 Months']] },
-              { value: 'background', label: 'Background', rows: [] },
-              { value: 'custom', label: 'Custom fields', rows: [] },
-              { value: 'additional', label: 'Additional Details', rows: [
-                ['Gender','Female'],
-                ['Location','Palo Alto, CA'],
-                ['Birthday','Mar 15, 1985'],
-                ['Spouse Birthday','Jul 22, 1983'],
-                ['Home Anniversary','Jun 10, 2015'],
-                ['Company','TechSolutions Inc.'],
-                ['Website','violet.techsolutions.com'],
-                ['Facebook','—'],
-                ['Twitter','—'],
-                ['LinkedIn','—'],
-                ['Attorney','James Parker'],
-                ['First Call Date','JUN 3 2024'],
-                ['Close Date','—'],
-                ['Commission %','3%'],
-                ['Priority Status','High'],
-                ['Last Visit','Jan 12, 2025'],
-                ['Listings Viewed','24'],
-                ['Showing Requests','6'],
-                ['Favorites','8'],
-              ]},
-            ].map(({ value, label, rows }) => (
-              <AccordionItem key={value} value={value} className="border-none">
-                <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
-                  {label}
-                </AccordionTrigger>
-                <AccordionContent className="border-b border-border pb-0">
-                  {rows.length === 0
-                    ? <p className="text-xs px-4 py-2.5 text-muted-foreground">None</p>
-                    : <div className="px-4 py-1">
-                        {rows.map(([k, v]) => (
-                          <div key={k} className="flex justify-between items-center py-1.5 border-b border-border last:border-0">
-                            <span className="text-[11px] text-muted-foreground">{k}</span>
-                            <span className="text-[11px] font-medium text-foreground">{v}</span>
-                          </div>
-                        ))}
+          {/* Details - moved up, open by default, includes Added on + Source */}
+          <Accordion type="single" collapsible defaultValue="details">
+            <AccordionItem value="details" className="border-none">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
+                Details
+              </AccordionTrigger>
+              <AccordionContent className="border-b border-border pb-0">
+                <div className="px-4 py-2">
+                  {[
+                    ['Added on', 'JUN 3 2024'],
+                    ['Source', 'Radius Marketplace'],
+                    ['Agent', 'Blaize Zeglaya'],
+                    ['Timeline', '0-3 Months'],
+                  ].map(([k, v], i, arr) => (
+                    <React.Fragment key={k}>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-[11px] text-muted-foreground">{k}</span>
+                        <span className="text-[11px] font-medium text-foreground">{v}</span>
                       </div>
-                  }
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+                      {i < arr.length - 1 && <Separator className="opacity-20" />}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
 
-          {/* Client App */}
-          <div className="flex items-center gap-3 min-h-12 px-4 py-0 border-b border-border">
-            <Smartphone className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="flex-1 text-xs font-medium text-muted-foreground">Client App</span>
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              <span className="text-[10px] text-muted-foreground">Last active Oct 12, 2025</span>
-              <DSBadge variant="outline" className="text-[10px] h-5 px-1.5 border-border text-muted-foreground cursor-pointer hover:text-foreground">Invite</DSBadge>
-            </div>
-          </div>
+          {/* Custom Fields */}
+          <Accordion type="single" collapsible>
+            <AccordionItem value="custom-fields" className="border-none">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
+                Custom Fields
+              </AccordionTrigger>
+              <AccordionContent className="border-b border-border pb-0">
+                {/* Segmented control */}
+                <div className="px-4 pt-3 pb-2">
+                  <div className={`flex rounded-md p-0.5 ${isDark ? 'bg-[#2a2a2a]' : 'bg-muted'}`}>
+                    {(['my', 'team'] as const).map(tab => (
+                      <button
+                        key={tab}
+                        onClick={() => setCustomFieldTab(tab)}
+                        className={cn(
+                          'flex-1 text-xs py-1 rounded-sm transition-colors font-medium',
+                          customFieldTab === tab
+                            ? isDark ? 'bg-[#3d3d3d] text-white shadow-sm' : 'bg-white text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                      >
+                        {tab === 'my' ? 'My Fields' : 'Team Fields'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Field rows */}
+                {customFields.filter(f => customFieldTab === 'my' ? f.visibility === 'me' : f.visibility === 'team').map((f, i, arr) => (
+                  <React.Fragment key={f.id}>
+                    <div className="group flex items-center gap-2 px-4 py-2">
+                      <GripVertical className="h-3.5 w-3.5 text-muted-foreground/30 shrink-0 cursor-grab" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-foreground">{f.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{f.visibility === 'me' ? 'Only for me' : 'Shared to everyone'}</p>
+                      </div>
+                      <Badge variant="outline" className="text-[10px] h-4 px-2 rounded-full shrink-0 font-normal">{f.type}</Badge>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted shrink-0">
+                            <MoreVertical className="h-3.5 w-3.5 text-muted-foreground" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-28">
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive focus:text-destructive">Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    {i < arr.length - 1 && <Separator className="mx-4 opacity-30" />}
+                  </React.Fragment>
+                ))}
+                {customFields.filter(f => customFieldTab === 'my' ? f.visibility === 'me' : f.visibility === 'team').length === 0 && (
+                  <p className="text-xs text-muted-foreground px-4 py-2.5">No fields yet.</p>
+                )}
+                <div className="px-4 py-2.5 border-t border-border">
+                  <button onClick={() => setShowAddCustomField(true)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    <Plus className="h-3 w-3" />Add Custom Field
+                  </button>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          {/* Additional Details */}
+          <Accordion type="single" collapsible>
+            <AccordionItem value="additional" className="border-none">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
+                Additional Details
+              </AccordionTrigger>
+              <AccordionContent className="border-b border-border pb-0">
+                <div className="px-4 py-2">
+                  {[
+                    ['Gender','Female'],['Location','Palo Alto, CA'],['Birthday','Mar 15, 1985'],
+                    ['Spouse Birthday','Jul 22, 1983'],['Home Anniversary','Jun 10, 2015'],
+                    ['Company','TechSolutions Inc.'],['Website','violet.techsolutions.com'],
+                    ['Facebook','—'],['Twitter','—'],['LinkedIn','—'],
+                    ['Attorney','James Parker'],['First Call Date','JUN 3 2024'],
+                    ['Close Date','—'],['Commission %','3%'],['Priority Status','High'],
+                    ['Last Visit','Jan 12, 2025'],['Listings Viewed','24'],
+                    ['Showing Requests','6'],['Favorites','8'],
+                  ].map(([k, v], i, arr) => (
+                    <React.Fragment key={k}>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-[11px] text-muted-foreground">{k}</span>
+                        <span className="text-[11px] font-medium text-foreground">{v}</span>
+                      </div>
+                      {i < arr.length - 1 && <Separator className="opacity-20" />}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          {/* Background hidden — data preserved in future data model */}
         </SidebarContent>
 
-        <SidebarFooter className="px-4 py-3 border-t border-border">
-          <div className="flex items-center justify-between">
+        <SidebarFooter className="px-4 py-3 border-t border-border space-y-2">
+          <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               {isDark ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
               <span>{isDark ? 'Dark mode' : 'Light mode'}</span>
@@ -678,9 +906,6 @@ export function ThreePanelClientProfile() {
               </button>
             ))}
           </div>
-
-          {/* BRBC */}
-          <BRBCCard agreement={brbcAgreement} isDark={isDark} />
 
           {/* Note Composer */}
           <Card className={`p-4 shadow-sm ${isDark ? 'bg-[#1a1a1a] border-[#2d2d2d]' : 'bg-gradient-to-br from-background via-blue-50/60 to-violet-50/40 border-blue-200/60'}`}>
@@ -820,6 +1045,53 @@ export function ThreePanelClientProfile() {
         </div>
       </div>
       </div>
+
+      {/* Custom Field Dialog */}
+      <Dialog open={showAddCustomField} onOpenChange={o => !o && setShowAddCustomField(false)}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader><DialogTitle>Add Custom Field</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label>Field Name</Label>
+              <Input placeholder="e.g. Lead Temperature" value={cfDraft.name} onChange={e => setCfDraft(d => ({ ...d, name: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Field Type</Label>
+              <div className="flex gap-2">
+                {['Text', 'Date', 'Link'].map(t => (
+                  <button key={t} onClick={() => setCfDraft(d => ({ ...d, type: t }))}
+                    className={cn('flex-1 rounded-md border py-1.5 text-xs font-medium transition-colors',
+                      cfDraft.type === t ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground hover:text-foreground')}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Visibility</Label>
+              <RadioGroup value={cfDraft.visibility} onValueChange={v => setCfDraft(d => ({ ...d, visibility: v }))} className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="me" id="vis-me" />
+                  <Label htmlFor="vis-me" className="font-normal cursor-pointer">Only for me</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="team" id="vis-team" />
+                  <Label htmlFor="vis-team" className="font-normal cursor-pointer">Share to everyone</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddCustomField(false)}>Cancel</Button>
+            <Button disabled={!cfDraft.name.trim()} onClick={() => {
+              if (!cfDraft.name.trim()) return;
+              setCustomFields(prev => [...prev, { id: `cf${Date.now()}`, name: cfDraft.name.trim(), type: cfDraft.type, visibility: cfDraft.visibility, value: '' }]);
+              setCfDraft({ name: '', type: 'Text', visibility: 'me' });
+              setShowAddCustomField(false);
+            }}>Save Field</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialogs */}
       <AddFamilyMemberDialog
