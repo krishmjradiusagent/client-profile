@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useTheme } from 'next-themes';
-import { ChevronRight, ChevronDown, ChevronLeft, Plus, MessageSquare, Bell, Activity as ActivityIcon, StickyNote, Building2, Briefcase, Mail, Phone, MapPin, Archive, FileTextIcon, Sparkles, Sun, Moon, PhoneCall, MessageCircle, Smartphone, RefreshCw, Clock, Ban, X, Pencil, Trash2, MoreVertical, Send, CheckCircle2, XCircle, GripVertical, Users } from 'lucide-react';
+import { ChevronRight, ChevronDown, ChevronLeft, Plus, MessageSquare, Bell, Activity as ActivityIcon, StickyNote, Building2, Briefcase, Mail, Phone, MapPin, Archive, FileTextIcon, Sparkles, Sun, Moon, PhoneCall, MessageCircle, Smartphone, RefreshCw, Clock, Ban, X, Pencil, Trash2, MoreVertical, Send, CheckCircle2, XCircle, GripVertical, Users, Droplet } from 'lucide-react';
 import { DSButton, DSBadge } from './ds';
 import { cn } from './ui/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -25,6 +25,8 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './ui/collap
 import { Separator } from './ui/separator';
 import { FlipButton } from './ui/flip-button';
 import { AuroraBars } from './ui/aurora-bars';
+import Aurora from './ui/Aurora.tsx';
+import Orb from './ui/Orb.tsx';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
@@ -91,6 +93,7 @@ export function ThreePanelClientProfile() {
   const isDark = theme === 'dark';
   const [melSummaryExists, setMelSummaryExists] = useState(true);
   const [melGenerating, setMelGenerating] = useState(false);
+  const [melHovered, setMelHovered] = useState(false);
   const [expandedPast, setExpandedPast] = useState<number | null>(null);
   const [melOpen, setMelOpen] = useState(true);
 
@@ -295,15 +298,15 @@ export function ThreePanelClientProfile() {
             </Select>
           </div>
           {/* Mobile clients + Client App — banner rows */}
-          <div className="mt-2 bg-muted/40 border-y border-border -mx-4">
-            <div className="flex items-center gap-2 px-4 py-2.5">
-              <Users className="h-3.5 w-3.5 text-sky-500 shrink-0" />
-              <span className="text-xs text-muted-foreground flex-1 truncate">My mobile clients</span>
-              <Button size="sm" className="h-6 text-[10px] px-2 font-medium bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white transition-all duration-150 border-0">Claim Lead</Button>
+          <div className="mt-2 border-y border-border -mx-4">
+            <div className="relative flex items-center gap-2 px-4 py-2.5 overflow-hidden bg-blue-50 dark:bg-blue-950/40 before:absolute before:inset-0 before:bg-[linear-gradient(105deg,transparent_40%,rgba(255,255,255,0.5)_50%,transparent_60%)] before:animate-[shine_3s_ease-in-out_infinite] dark:before:bg-[linear-gradient(105deg,transparent_40%,rgba(255,255,255,0.06)_50%,transparent_60%)]">
+              <Droplet className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+              <span className="text-xs text-blue-700 dark:text-blue-300 flex-1 truncate">My mobile clients</span>
+              <Button size="sm" className="h-6 text-[10px] px-2 font-medium bg-blue-500 hover:bg-blue-600 active:scale-95 text-white transition-all duration-150 border-0">Claim Lead</Button>
             </div>
             <Separator />
             <div className="flex items-center gap-2 px-4 py-2.5">
-              <Smartphone className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <Smartphone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
               <span className="text-xs font-medium text-muted-foreground flex-1">Client App</span>
               <div className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
@@ -342,27 +345,21 @@ export function ThreePanelClientProfile() {
 
               {/* CTA — always visible */}
               <div className="relative px-4 pb-3">
-                <motion.button
+                <button
                   onClick={handleGenerateMel}
                   disabled={melGenerating}
-                  whileHover="hover"
-                  initial="initial"
-                  className="relative w-full overflow-hidden rounded-md text-white disabled:opacity-50 h-9 flex items-center justify-between px-3 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 hover:from-slate-800 hover:via-indigo-900 hover:to-slate-800 border border-violet-500/35 transition-all"
+                  onMouseEnter={() => setMelHovered(true)}
+                  onMouseLeave={() => setMelHovered(false)}
+                  className="relative w-full overflow-hidden rounded-md text-white disabled:opacity-50 h-9 flex items-center justify-between px-3 bg-[#0d0b1e] border border-violet-500/35 transition-all"
                 >
-                  <AuroraBars
-                    barCount={60}
-                    speed={2.1}
-                    blur={12}
-                    background="transparent"
-                    colors={["#3730a3", "#4c1d95", "#1e40af", "#4338ca", "#2d1b69", "#5b21b6"]}
-                  />
-                  {/* Shine sweep */}
-                  <motion.div
-                    className="absolute inset-0 w-full h-full pointer-events-none"
-                    style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)" }}
-                    variants={{ initial: { x: "-100%" }, hover: { x: "100%" } }}
-                    transition={{ duration: 0.55, ease: "easeInOut" }}
-                  />
+                  <div className="absolute inset-0 pointer-events-none">
+                    <Aurora
+                      colorStops={["#a78bfa", "#B497CF", "#5227FF"]}
+                      blend={1}
+                      amplitude={0.4}
+                      speed={melHovered ? 2.5 : 1.2}
+                    />
+                  </div>
                   <span className="relative flex items-center gap-2 text-sm font-semibold">
                     <InfIcon className="h-4 w-4 text-violet-300" />
                     {melGenerating ? 'Generating…' : 'Summarise Violet'}
@@ -370,7 +367,7 @@ export function ThreePanelClientProfile() {
                   <span className="relative flex items-center gap-0.5 rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[10px] font-semibold text-white/70">
                     <span>⌘</span><span>S</span>
                   </span>
-                </motion.button>
+                </button>
               </div>
 
               {/* Collapsible body */}
@@ -423,7 +420,7 @@ export function ThreePanelClientProfile() {
           {/* Co-agent */}
           <Accordion type="single" collapsible defaultValue="coagent">
             <AccordionItem value="coagent" className="border-none">
-              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-sky-600 dark:[&[data-state=open]]:text-sky-400 transition-colors duration-150">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-foreground transition-colors duration-150">
                 Co-agent
               </AccordionTrigger>
               <AccordionContent className="border-b border-border pb-0">
@@ -443,10 +440,10 @@ export function ThreePanelClientProfile() {
           {/* Contact */}
           <Accordion type="single" collapsible defaultValue="contact">
             <AccordionItem value="contact" className="border-none">
-              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-emerald-600 dark:[&[data-state=open]]:text-emerald-400 transition-colors duration-150">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-foreground transition-colors duration-150">
                 <span className="flex items-center gap-2">
                   Contact
-                  <Badge className="h-4 px-1.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-transparent">{contactEmails.length + contactPhones.length + 1}</Badge>
+                  <Badge className="h-4 px-1.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border-border">{contactEmails.length + contactPhones.length + 1}</Badge>
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
@@ -515,7 +512,7 @@ export function ThreePanelClientProfile() {
 
           {/* AI Prospecting */}
           <div className="group flex items-center gap-3 min-h-12 px-4 py-0 border-b border-border">
-            <Sparkles className="h-4 w-4 text-violet-500 shrink-0" />
+            <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
             <span className="flex-1 text-sm font-medium text-muted-foreground leading-none">AI Prospecting</span>
             <button className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 text-[11px] text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded hover:bg-muted mr-1">
               <Pencil className="h-3 w-3 mr-0.5" />Edit
@@ -525,7 +522,7 @@ export function ThreePanelClientProfile() {
 
           {/* AI Chat Replies */}
           <div className="flex items-center gap-3 min-h-12 px-4 py-0 border-b border-border">
-            <MessageSquare className="h-4 w-4 text-sky-500 shrink-0" />
+            <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />
             <span className="flex-1 text-sm font-medium text-muted-foreground leading-none">AI chat replies</span>
             <Switch className="scale-75 origin-right" />
           </div>
@@ -644,10 +641,10 @@ export function ThreePanelClientProfile() {
           {/* Family Members */}
           <Accordion type="single" collapsible>
             <AccordionItem value="family" className="border-none">
-              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-rose-500 dark:[&[data-state=open]]:text-rose-400 transition-colors duration-150">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-foreground transition-colors duration-150">
                 <span className="flex items-center gap-2 flex-1">
                   Family Members
-                  {familyMembers.length > 0 && <Badge className="h-4 px-1.5 rounded-full text-[10px] font-medium bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/40 dark:text-rose-300 dark:border-transparent">{familyMembers.length}</Badge>}
+                  {familyMembers.length > 0 && <Badge className="h-4 px-1.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border-border">{familyMembers.length}</Badge>}
                   <span className="ml-auto flex items-center gap-1 mr-1">
                     <span role="button" tabIndex={0} onClick={e => { e.stopPropagation(); }} onKeyDown={e => e.key==='Enter'&&e.stopPropagation()} className={`p-1 rounded cursor-pointer ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`} title="Send app invite"><Send className="h-3.5 w-3.5 text-muted-foreground" /></span>
                     <span role="button" tabIndex={0} onClick={e => { e.stopPropagation(); setShowAddFamily(true); }} onKeyDown={e => e.key==='Enter'&&(e.stopPropagation(),setShowAddFamily(true))} className={`p-1 rounded cursor-pointer ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Plus className="h-3.5 w-3.5 text-muted-foreground" /></span>
@@ -709,10 +706,10 @@ export function ThreePanelClientProfile() {
           {/* Collaborators */}
           <Accordion type="single" collapsible>
             <AccordionItem value="collaborators" className="border-none">
-              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-violet-600 dark:[&[data-state=open]]:text-violet-400 transition-colors duration-150">
+              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border [&[data-state=open]]:text-foreground transition-colors duration-150">
                 <span className="flex items-center gap-2 flex-1">
                   Collaborators
-                  {collaborators.length > 0 && <Badge className="h-4 px-1.5 rounded-full text-[10px] font-medium bg-violet-100 text-violet-700 border-violet-200 dark:bg-violet-900/40 dark:text-violet-300 dark:border-transparent">{collaborators.length}</Badge>}
+                  {collaborators.length > 0 && <Badge className="h-4 px-1.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border-border">{collaborators.length}</Badge>}
                   <span role="button" tabIndex={0} onClick={e => { e.stopPropagation(); setShowAddCollaborator(true); }} onKeyDown={e => e.key==='Enter'&&(e.stopPropagation(),setShowAddCollaborator(true))} className={`ml-auto mr-1 p-1 rounded cursor-pointer ${isDark ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-100'}`}><Plus className="h-3.5 w-3.5 text-muted-foreground" /></span>
                 </span>
               </AccordionTrigger>
