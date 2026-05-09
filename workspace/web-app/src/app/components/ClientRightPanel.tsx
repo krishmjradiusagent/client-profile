@@ -6,7 +6,9 @@ import {
   MoreVertical,
   AlertCircle,
   Search as SearchIcon,
-  Users,
+  BedDouble,
+  Bath,
+  Ruler,
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
@@ -106,6 +108,29 @@ const TX_STATUS_CLS: Record<TxStatus, string> = {
   closed: 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200',
 };
 
+const LISTING_TYPE_CLS: Record<string, string> = {
+  Listing: 'bg-purple-50 text-purple-700 border-purple-200',
+  Contract: 'bg-sky-50 text-sky-700 border-sky-200',
+};
+
+const TX_TYPE_CLS: Record<string, string> = {
+  Buyer: 'bg-blue-50 text-blue-700 border-blue-200',
+  Seller: 'bg-orange-50 text-orange-700 border-orange-200',
+  Tenant: 'bg-teal-50 text-teal-700 border-teal-200',
+  Landlord: 'bg-amber-50 text-amber-700 border-amber-200',
+};
+
+const TX_STRIP_CLS: Record<TxStatus, string> = {
+  'new-client': 'bg-emerald-50 text-emerald-800 border-emerald-100 hover:bg-emerald-100/70',
+  'new-offer': 'bg-sky-50 text-sky-800 border-sky-100 hover:bg-sky-100/70',
+  pending: 'bg-amber-50 text-amber-800 border-amber-100 hover:bg-amber-100/70',
+  'incomplete-contract': 'bg-orange-50 text-orange-800 border-orange-100 hover:bg-orange-100/70',
+  active: 'bg-blue-50 text-blue-800 border-blue-100 hover:bg-blue-100/70',
+  'in-escrow': 'bg-violet-50 text-violet-800 border-violet-100 hover:bg-violet-100/70',
+  'closing-soon': 'bg-purple-50 text-purple-800 border-purple-100 hover:bg-purple-100/70',
+  closed: 'bg-muted/50 text-muted-foreground border-border hover:bg-muted',
+};
+
 const SEARCH_STATUS_LABEL: Record<SearchStatus, string> = {
   active: 'Active',
   'alerts-on': 'Alerts On',
@@ -120,6 +145,13 @@ const SEARCH_STATUS_CLS: Record<SearchStatus, string> = {
   'alerts-on': 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
   paused: 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200',
   'new-client': 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+};
+
+const SEARCH_STRIP_CLS: Record<SearchStatus, string> = {
+  active: 'bg-blue-50 text-blue-800 border-blue-100 hover:bg-blue-100/70',
+  'alerts-on': 'bg-emerald-50 text-emerald-800 border-emerald-100 hover:bg-emerald-100/70',
+  paused: 'bg-muted/50 text-muted-foreground border-border hover:bg-muted',
+  'new-client': 'bg-emerald-50 text-emerald-800 border-emerald-100 hover:bg-emerald-100/70',
 };
 
 // ─── Seed data ─────────────────────────────────────────────────────────────────
@@ -237,18 +269,24 @@ function RightPanelSection({
   );
 }
 
-// ─── StatusDropdown (reused for tx + search) ───────────────────────────────────
+// ─── StatusStrip (bottom full-bleed strip for tx + search) ────────────────────
 
-function TxStatusDropdown({ status, onChange }: { status: TxStatus; onChange: (s: TxStatus) => void }) {
+function TxStatusStrip({ status, onChange }: { status: TxStatus; onChange: (s: TxStatus) => void }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className={cn('inline-flex items-center h-6 px-2 rounded-full border text-xs font-medium transition-colors cursor-pointer', TX_STATUS_CLS[status])} aria-label="Change transaction status">
-          {TX_STATUS_LABEL[status]}
-          <ChevronDown className="h-3 w-3 ml-0.5 opacity-60" />
+        <button
+          className={cn(
+            'w-full flex items-center justify-between px-3 py-2 border-t text-xs font-medium rounded-b-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            TX_STRIP_CLS[status],
+          )}
+          aria-label="Change status"
+        >
+          <span>Status: {TX_STATUS_LABEL[status]}</span>
+          <ChevronDown className="h-4 w-4 opacity-60 shrink-0" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-44">
+      <DropdownMenuContent align="end" className="w-44">
         {TX_STATUS_OPTIONS.map((s) => (
           <DropdownMenuItem key={s} className={cn(s === status && 'font-medium bg-muted')} onClick={() => onChange(s)}>
             {TX_STATUS_LABEL[s]}
@@ -259,16 +297,22 @@ function TxStatusDropdown({ status, onChange }: { status: TxStatus; onChange: (s
   );
 }
 
-function SearchStatusDropdown({ status, onChange }: { status: SearchStatus; onChange: (s: SearchStatus) => void }) {
+function SearchStatusStrip({ status, onChange }: { status: SearchStatus; onChange: (s: SearchStatus) => void }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className={cn('inline-flex items-center h-6 px-2 rounded-full border text-xs font-medium transition-colors cursor-pointer', SEARCH_STATUS_CLS[status])} aria-label="Change search status">
-          {SEARCH_STATUS_LABEL[status]}
-          <ChevronDown className="h-3 w-3 ml-0.5 opacity-60" />
+        <button
+          className={cn(
+            'w-full flex items-center justify-between px-3 py-2 border-t text-xs font-medium rounded-b-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            SEARCH_STRIP_CLS[status],
+          )}
+          aria-label="Change status"
+        >
+          <span>Status: {SEARCH_STATUS_LABEL[status]}</span>
+          <ChevronDown className="h-4 w-4 opacity-60 shrink-0" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-40">
+      <DropdownMenuContent align="end" className="w-40">
         {SEARCH_STATUS_OPTIONS.map((s) => (
           <DropdownMenuItem key={s} className={cn(s === status && 'font-medium bg-muted')} onClick={() => onChange(s)}>
             {SEARCH_STATUS_LABEL[s]}
@@ -276,6 +320,17 @@ function SearchStatusDropdown({ status, onChange }: { status: SearchStatus; onCh
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+// ─── MetadataItem ──────────────────────────────────────────────────────────────
+
+function MetadataItem({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground leading-3">{label}</div>
+      <div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs leading-4 text-foreground">{children}</div>
+    </div>
   );
 }
 
@@ -288,87 +343,101 @@ function TransactionCard({
   tx: Transaction;
   onStatusChange: (id: string, status: TxStatus) => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <Card className="p-3 rounded-xl hover:shadow-md hover:border-border/80 transition-shadow cursor-pointer" style={{ gap: 0 }}>
-      {/* Header row */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1 min-w-0">
-          <Badge variant="outline" className="text-[10px] h-5 px-2 rounded-full font-medium border-slate-200 bg-slate-50 text-slate-600 shrink-0">
-            {tx.listingType}
-          </Badge>
-          <Badge variant="outline" className="text-[10px] h-5 px-2 rounded-full font-normal border-border text-muted-foreground shrink-0">
-            {tx.transactionType}
-          </Badge>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Open transaction actions">
-              <MoreVertical className="h-3.5 w-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-36">
-            <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">Remove</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Address */}
-      <p className="mt-1.5 text-sm font-semibold leading-5 line-clamp-2 text-foreground">
-        {tx.address}
-      </p>
-
-      {/* Price + specs */}
-      <div className="mt-1 flex items-center gap-1.5">
-        {tx.price && <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{tx.price}</span>}
-        <span className="text-xs leading-4 text-muted-foreground truncate">{tx.beds} bd · {tx.baths} ba · {tx.sqft}</span>
-      </div>
-
-      <Separator className="my-2" />
-
-      {/* Metadata grid */}
-      <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-        <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Client</span>
-          <Avatar className="h-3.5 w-3.5 shrink-0">
-            <AvatarFallback className="text-[7px] font-bold bg-violet-100 text-violet-700">{tx.clientInitials}</AvatarFallback>
-          </Avatar>
-          <span className="text-xs leading-4 text-foreground truncate">{tx.clientName}</span>
-        </div>
-        <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Accepted</span>
-          <span className="text-xs leading-4 text-foreground truncate">{tx.acceptanceDate ?? '—'}</span>
-        </div>
-        <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Escrow</span>
-          <span className="text-xs leading-4 text-foreground truncate">{tx.closeOfEscrow ?? '—'}</span>
-        </div>
-        <div className="flex items-center gap-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Agent</span>
-          <Avatar className="h-3.5 w-3.5 shrink-0">
-            <AvatarFallback className="text-[7px] font-bold bg-sky-100 text-sky-700">{tx.agentInitials}</AvatarFallback>
-          </Avatar>
-          <span className="text-xs leading-4 text-foreground truncate">{tx.agentName}</span>
-        </div>
-        {tx.collaboratorName && (
-          <div className="col-span-2 flex items-center gap-1 min-w-0">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">Collab</span>
-            <span className="text-xs leading-4 text-foreground truncate">{tx.collaboratorName}</span>
-            {tx.collaboratorCount > 0 && (
-              <span className="text-[10px] text-muted-foreground shrink-0">+{tx.collaboratorCount}</span>
-            )}
+    <Card className="overflow-hidden rounded-xl border bg-card p-0 gap-0 shadow-none transition-colors hover:border-muted-foreground/30">
+      {/* ── Top content ── */}
+      <div className="p-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 min-w-0">
+            <Badge variant="outline" className={cn('text-[10px] h-5 px-2 rounded-full font-medium shrink-0', LISTING_TYPE_CLS[tx.listingType] ?? 'bg-muted text-muted-foreground border-border')}>
+              {tx.listingType}
+            </Badge>
+            <Badge variant="outline" className={cn('text-[10px] h-5 px-2 rounded-full font-medium shrink-0', TX_TYPE_CLS[tx.transactionType] ?? 'bg-muted text-muted-foreground border-border')}>
+              {tx.transactionType}
+            </Badge>
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Open transaction actions">
+                <MoreVertical className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36">
+              <DropdownMenuItem>View details</DropdownMenuItem>
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive focus:text-destructive">Remove</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <p className="mt-2 text-sm font-semibold leading-5 line-clamp-2 text-foreground">{tx.address}</p>
+        {tx.price && (
+          <p className="mt-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">{tx.price}</p>
         )}
       </div>
 
-      <Separator className="my-2" />
-
-      {/* Status row */}
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Status</span>
-        <TxStatusDropdown status={tx.status} onChange={(s) => onStatusChange(tx.id, s)} />
+      {/* ── Specs strip ── */}
+      <div className="border-y bg-muted/30 px-3 py-2 flex items-center gap-4">
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <BedDouble className="h-3.5 w-3.5 text-blue-400" />
+          {tx.beds} beds
+        </span>
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <Bath className="h-3.5 w-3.5 text-teal-400" />
+          {tx.baths} baths
+        </span>
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <Ruler className="h-3.5 w-3.5 text-purple-400" />
+          {tx.sqft}
+        </span>
       </div>
+
+      {/* ── Details accordion ── */}
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger asChild>
+          <button className="flex h-8 w-full items-center justify-between px-3 text-xs font-medium text-muted-foreground hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span>Details</span>
+            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className={cn('px-3 py-2.5', open && 'border-t')}>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+              <MetadataItem label="Client">
+                <Avatar className="h-4 w-4 shrink-0">
+                  <AvatarFallback className="text-[7px] font-bold bg-violet-100 text-violet-700">{tx.clientInitials}</AvatarFallback>
+                </Avatar>
+                <span className="truncate">{tx.clientName}</span>
+              </MetadataItem>
+              <MetadataItem label="Accepted">
+                <span className="truncate">{tx.acceptanceDate ?? '—'}</span>
+              </MetadataItem>
+              <MetadataItem label="Escrow">
+                <span className="truncate">{tx.closeOfEscrow ?? '—'}</span>
+              </MetadataItem>
+              <MetadataItem label="Agent">
+                <Avatar className="h-4 w-4 shrink-0">
+                  <AvatarFallback className="text-[7px] font-bold bg-sky-100 text-sky-700">{tx.agentInitials}</AvatarFallback>
+                </Avatar>
+                <span className="truncate">{tx.agentName}</span>
+              </MetadataItem>
+              {tx.collaboratorName && (
+                <div className="col-span-2">
+                  <MetadataItem label="Collab">
+                    <span className="truncate">{tx.collaboratorName}</span>
+                    {tx.collaboratorCount > 0 && (
+                      <span className="shrink-0 text-muted-foreground">+{tx.collaboratorCount}</span>
+                    )}
+                  </MetadataItem>
+                </div>
+              )}
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <TxStatusStrip status={tx.status} onChange={(s) => onStatusChange(tx.id, s)} />
     </Card>
   );
 }
@@ -383,12 +452,11 @@ function SearchCard({
   onStatusChange: (id: string, status: SearchStatus) => void;
 }) {
   return (
-    <Card className="p-3 rounded-xl hover:shadow-md hover:border-border/80 transition-shadow cursor-pointer" style={{ gap: 0 }}>
-      {/* Header: name + status + kebab */}
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground line-clamp-1 flex-1 min-w-0">{search.name}</p>
-        <div className="flex items-center gap-1 shrink-0">
-          <SearchStatusDropdown status={search.status} onChange={(s) => onStatusChange(search.id, s)} />
+    <Card className="overflow-hidden rounded-xl border bg-card p-0 gap-0 hover:shadow-md hover:border-border/80 transition-shadow cursor-pointer">
+      <div className="p-3">
+        {/* Header: name + kebab */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-foreground line-clamp-1 flex-1 min-w-0">{search.name}</p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Open search actions">
@@ -402,17 +470,30 @@ function SearchCard({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
+        {/* Budget */}
+        <p className="mt-1.5 text-sm font-semibold text-foreground truncate">{search.budgetMin} – {search.budgetMax}</p>
+
+        <Separator className="my-2" />
+
+        {/* Metadata */}
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+          <MetadataItem label="Location">
+            <span className="truncate">{search.location}</span>
+          </MetadataItem>
+          <MetadataItem label="Specs">
+            <span className="truncate">{search.beds} bd · {search.baths} ba · {search.sqft}</span>
+          </MetadataItem>
+          <MetadataItem label="Offers">
+            <span className="truncate">{search.offersCount} offers</span>
+          </MetadataItem>
+          <MetadataItem label="Updated">
+            <span className="truncate">{search.lastUpdated}</span>
+          </MetadataItem>
+        </div>
       </div>
 
-      {/* Budget */}
-      <p className="mt-1.5 text-sm font-semibold text-foreground truncate">{search.budgetMin} – {search.budgetMax}</p>
-
-      <Separator className="my-2" />
-
-      {/* Metadata */}
-      <p className="text-xs leading-4 text-muted-foreground line-clamp-1">{search.location}</p>
-      <p className="text-xs leading-4 text-muted-foreground mt-0.5">{search.beds} bd · {search.baths} ba · {search.sqft}</p>
-      <p className="text-[10px] text-muted-foreground/70 mt-0.5">{search.offersCount} offers · Updated {search.lastUpdated}</p>
+      <SearchStatusStrip status={search.status} onChange={(s) => onStatusChange(search.id, s)} />
     </Card>
   );
 }
