@@ -133,6 +133,7 @@ export function ThreePanelClientProfile() {
   });
 
   // Custom Fields
+  const [tagsExpanded, setTagsExpanded] = useState(false);
   const [customFieldTab, setCustomFieldTab] = useState<'my' | 'team'>('my');
   const [customFields, setCustomFields] = useState([
     { id: 'cf1', name: 'Lead Temperature', type: 'Text', visibility: 'me', value: 'Warm' },
@@ -188,8 +189,9 @@ export function ThreePanelClientProfile() {
               <span>Back to active clients</span>
             </button>
 
-          {/* Profile Card */}
-          <div className={`group relative rounded-xl border overflow-hidden mb-3 ${isDark ? 'bg-[#262626] border-[#3d3d3d]' : 'bg-white border-slate-200'}`}>
+          {/* Profile Card + Tags wrapper */}
+          <div className="flex flex-col items-center w-full mb-3">
+          <div className={`group relative rounded-xl border overflow-hidden w-full z-10 ${isDark ? 'bg-[#262626] border-[#3d3d3d]' : 'bg-white border-slate-200'}`}>
             {/* Hover actions */}
             <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <button className={`flex items-center justify-center h-6 w-6 rounded-md transition-colors ${isDark ? 'bg-[#3d3d3d] hover:bg-[#4d4d4d] text-gray-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}>
@@ -238,6 +240,34 @@ export function ThreePanelClientProfile() {
               </button>
             </div>
           </div>
+
+          {/* Tags sub-card — attached below */}
+          <div
+            className="w-[calc(100%-32px)] -mt-px rounded-b-2xl rounded-t-none border border-t-0 border-border bg-card px-3 py-1.5 z-0 cursor-default"
+            onMouseEnter={() => setTagsExpanded(true)}
+            onMouseLeave={() => setTagsExpanded(false)}
+          >
+            <div
+              className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+              style={{ maxHeight: tagsExpanded ? '80px' : '16px' }}
+            >
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+              <span className="text-[10px] font-medium text-muted-foreground shrink-0">Tags:</span>
+              {[
+                { tag: '901',          cls: 'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-800/50 dark:text-stone-300 dark:border-transparent' },
+                { tag: 'First Client', cls: 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-950/50 dark:text-sky-300 dark:border-transparent' },
+                { tag: 'Buyer',        cls: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-transparent' },
+                { tag: 'Lease',        cls: 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-transparent' },
+                { tag: 'FSBO',         cls: 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-950/50 dark:text-amber-300 dark:border-transparent' },
+                { tag: 'Investor',     cls: 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/50 dark:text-purple-300 dark:border-transparent' },
+                { tag: 'Future',       cls: 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-950/50 dark:text-teal-300 dark:border-transparent' },
+              ].map(({ tag, cls }) => (
+                <span key={tag} className={cn('inline-flex items-center h-4 rounded-full border px-1.5 text-[9px] font-medium whitespace-nowrap leading-none', cls)}>{tag}</span>
+              ))}
+            </div>
+            </div>
+          </div>
+          </div>{/* end wrapper */}
 
           {/* Status and Owner */}
           <div className="space-y-2">
@@ -387,30 +417,6 @@ export function ThreePanelClientProfile() {
 
             </div>
           </Collapsible>
-
-          {/* Tags */}
-          <Accordion type="single" collapsible defaultValue="tags">
-            <AccordionItem value="tags" className="border-none">
-              <AccordionTrigger className="px-4 py-0 min-h-12 text-sm font-medium text-muted-foreground hover:no-underline hover:text-foreground border-b border-border">
-                Tags
-              </AccordionTrigger>
-              <AccordionContent className="border-b border-border pb-0">
-                <div className="px-4 py-3 flex flex-wrap gap-2">
-                  {[
-                    { tag: '901',          cls: 'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-800/50 dark:text-stone-300 dark:border-transparent' },
-                    { tag: 'First Client', cls: 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-950/50 dark:text-sky-300 dark:border-transparent' },
-                    { tag: 'Buyer',        cls: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-transparent' },
-                    { tag: 'Lease',        cls: 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-transparent' },
-                    { tag: 'FSBO',         cls: 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-950/50 dark:text-amber-300 dark:border-transparent' },
-                    { tag: 'Investor',     cls: 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/50 dark:text-purple-300 dark:border-transparent' },
-                    { tag: 'Future',       cls: 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-950/50 dark:text-teal-300 dark:border-transparent' },
-                  ].map(({ tag, cls }) => (
-                    <span key={tag} className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium', cls)}>{tag}</span>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
 
           {/* Co-agent */}
           <Accordion type="single" collapsible defaultValue="coagent">
