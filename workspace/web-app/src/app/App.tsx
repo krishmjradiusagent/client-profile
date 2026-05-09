@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Toaster } from './components/ui/sonner';
 import { WebClientProfile } from './components/WebClientProfile';
 import { SearchesListWeb } from './components/SearchesListWeb';
 import { OffersListWeb } from './components/OffersListWeb';
@@ -43,6 +44,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Toaster position="bottom-right" />
       {currentScreen.type === 'three-panel' && (
         <ThreePanelClientProfile />
       )}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { ClientRightPanel } from './ClientRightPanel';
 import { useTheme } from 'next-themes';
 import { ChevronRight, ChevronDown, ChevronLeft, Plus, MessageSquare, Bell, Activity as ActivityIcon, StickyNote, Building2, Briefcase, Mail, Phone, MapPin, Archive, FileTextIcon, Sparkles, Sun, Moon, PhoneCall, MessageCircle, Smartphone, RefreshCw, Clock, Ban, X, Pencil, Trash2, MoreVertical, Send, CheckCircle2, XCircle, GripVertical, Users, Droplet } from 'lucide-react';
 import { DSButton, DSBadge } from './ds';
@@ -163,11 +164,11 @@ export function ThreePanelClientProfile() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className={`h-screen flex overflow-hidden ${isDark ? 'bg-[#0a0a0a]' : 'bg-[#fafafa]'}`}>
+      <div className={`flex-1 h-screen flex overflow-hidden ${isDark ? 'bg-[#0a0a0a]' : 'bg-[#fafafa]'}`}>
           {/* LEFT PANEL - always dark sidebar */}
           <Sidebar
             collapsible="none"
-            className={`w-[320px] border-r ${isDark ? 'border-[#2d2d2d]' : 'border-gray-200'}`}
+            className={`w-[288px] border-r ${isDark ? 'border-[#2d2d2d]' : 'border-gray-200'}`}
             style={isDark ? {
               '--sidebar': '#1a1a1a',
               '--sidebar-foreground': '#e5e5e5',
@@ -963,79 +964,7 @@ export function ThreePanelClientProfile() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className={`w-[320px] shrink-0 border-l overflow-y-auto ${isDark ? 'border-[#2d2d2d] bg-[#111111]' : 'border-gray-200 bg-white'}`}>
-        <div className="p-5 space-y-5">
-          {/* Transactions and Listings */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Transactions and listings</h3>
-              <div className="flex items-center gap-1">
-                <button className={`h-7 w-7 flex items-center justify-center rounded ${isDark ? 'hover:bg-[#262626]' : 'hover:bg-gray-100'}`}>
-                  <Plus className={`h-4 w-4 ${isDark ? 'text-gray-400' : 'text-blue-600'}`} />
-                </button>
-                <button className={`h-7 w-7 flex items-center justify-center rounded ${isDark ? 'hover:bg-[#262626]' : 'hover:bg-gray-100'}`}>
-                  <ChevronRight className={`h-4 w-4 ${isDark ? 'text-gray-400' : 'text-blue-600'}`} />
-                </button>
-              </div>
-            </div>
-            <Card className={`p-3 shadow-sm hover:shadow-md transition-shadow ${isDark ? 'bg-[#1a1a1a] border-[#2d2d2d]' : 'bg-gradient-to-br from-background via-blue-50/60 to-violet-50/40 border-blue-200/60'}`}>
-              <div className="space-y-2">
-                <p className={`text-sm font-medium leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>456 Sunset Boulevard, Los Angeles, CA 90028</p>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>3 beds · 3 baths · 2,500 sqft</p>
-                <p className="text-xs text-gray-500">Acceptance Date: 01/12/2025<br />Close of escrow: 06/12/2025</p>
-                <DSBadge variant="secondary" className="mt-2 text-xs bg-emerald-50 text-emerald-700 border-emerald-200">In new client ✓</DSBadge>
-              </div>
-            </Card>
-            <Card className={`p-3 shadow-sm hover:shadow-md transition-shadow ${isDark ? 'bg-[#1a1a1a] border-[#2d2d2d]' : 'bg-gradient-to-br from-background via-blue-50/60 to-violet-50/40 border-blue-200/60'}`}>
-              <div className="space-y-2">
-                <p className={`text-sm font-medium leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>1234 Market Street, Suite 567, San Francisco, CA 94103, USA</p>
-                <p className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>$730,000.00</p>
-                <p className="text-xs text-gray-500">Acceptance Date: 01/12/2025<br />Close of escrow: 06/12/2025</p>
-                <DSBadge variant="secondary" className="mt-2 text-xs bg-emerald-50 text-emerald-700 border-emerald-200">In incomplete contract ✓</DSBadge>
-              </div>
-            </Card>
-          </div>
-
-          <div className={`h-px ${isDark ? 'bg-[#2d2d2d]' : 'bg-gray-200'}`}></div>
-
-          {/* Searches */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Searches</h3>
-              <div className="flex items-center gap-1">
-                <button className={`h-7 w-7 flex items-center justify-center rounded ${isDark ? 'hover:bg-[#262626]' : 'hover:bg-gray-100'}`}>
-                  <Plus className={`h-4 w-4 ${isDark ? 'text-gray-400' : 'text-blue-600'}`} />
-                </button>
-                <button className={`h-7 w-7 flex items-center justify-center rounded ${isDark ? 'hover:bg-[#262626]' : 'hover:bg-gray-100'}`}>
-                  <ChevronRight className={`h-4 w-4 ${isDark ? 'text-gray-400' : 'text-blue-600'}`} />
-                </button>
-              </div>
-            </div>
-            <Card className={`p-3 shadow-sm hover:shadow-md transition-shadow ${isDark ? 'bg-[#1a1a1a] border-[#2d2d2d]' : 'bg-gradient-to-br from-background via-blue-50/60 to-violet-50/40 border-blue-200/60'}`}>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>San-Francisco-Area-Apartments</p>
-                  <DSBadge variant="secondary" className="text-xs bg-blue-50 text-blue-700 border-blue-200">Active</DSBadge>
-                </div>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>$1,490,000 - $2,495,000<br />3beds, Atlanta, San Francisco, N... · 4 offers</p>
-                <p className="text-xs text-gray-500">Last updated on: 08/12/2025</p>
-              </div>
-            </Card>
-          </div>
-
-          <div className={`h-px ${isDark ? 'bg-[#2d2d2d]' : 'bg-gray-200'}`}></div>
-
-          {/* Financing */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Financing</h3>
-              <button className={`h-7 w-7 flex items-center justify-center rounded ${isDark ? 'hover:bg-[#262626]' : 'hover:bg-gray-100'}`}>
-                <ChevronRight className={`h-4 w-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ClientRightPanel isDark={isDark} />
       </div>
 
       {/* Custom Field Dialog */}
